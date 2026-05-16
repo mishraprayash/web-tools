@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FileJson, Lock, Hash, Clock, Regex, Type, Link2,
-  CalendarClock, FileText, Palette, KeyRound, FileCode,
-  Globe, AlignLeft, Binary, Search, ArrowRight, Command,
+  CalendarClock, Palette, KeyRound, FileCode,
+  Globe, AlignLeft, Binary, ImageUp, Search, ArrowRight, Command,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
@@ -31,13 +31,13 @@ const tools: ToolDef[] = [
   { id: 'uuid', name: 'UUID Generator', description: 'Generate bulk UUID v4 identifiers instantly', category: 'Text', icon: Type, color: 'from-cyan-500 to-blue-500' },
   { id: 'url', name: 'URL Encoder', description: 'Encode & decode URL components', category: 'Encoding', icon: Link2, color: 'from-orange-500 to-amber-500' },
   { id: 'cron', name: 'Cron Parser', description: 'Translate cron expressions to plain English', category: 'Date & Time', icon: CalendarClock, color: 'from-indigo-500 to-blue-500' },
-  { id: 'text', name: 'Text Case Converter', description: 'camelCase, snake_case, Title Case & more', category: 'Text', icon: FileText, color: 'from-pink-500 to-rose-500' },
   { id: 'color', name: 'Color Converter', description: 'Convert between hex, RGB & HSL colour formats', category: 'Formatting', icon: Palette, color: 'from-pink-500 to-purple-500' },
   { id: 'password', name: 'Password Generator', description: 'Generate strong, customisable passwords', category: 'Security', icon: KeyRound, color: 'from-red-500 to-rose-500' },
   { id: 'yaml-json', name: 'YAML ↔ JSON', description: 'Convert between YAML and JSON formats', category: 'Formatting', icon: FileCode, color: 'from-teal-500 to-emerald-500' },
   { id: 'html-preview', name: 'HTML Preview', description: 'Live render HTML with instant preview', category: 'Formatting', icon: Globe, color: 'from-orange-500 to-red-500' },
   { id: 'lorem-ipsum', name: 'Lorem Ipsum', description: 'Generate placeholder text in various lengths', category: 'Text', icon: AlignLeft, color: 'from-sky-500 to-indigo-500' },
   { id: 'number-base', name: 'Base Converter', description: 'Convert between decimal, hex, binary & octal', category: 'Encoding', icon: Binary, color: 'from-violet-500 to-blue-500' },
+  { id: 'image-base64', name: 'Image to Base64', description: 'Convert images to base64 data URLs', category: 'Encoding', icon: ImageUp, color: 'from-sky-500 to-teal-500' },
 ];
 
 const categories = ['All', 'Formatting', 'Encoding', 'Security', 'Text', 'Date & Time'];
@@ -133,7 +133,6 @@ export function ToolGrid() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="shrink-0">
               <h1 className="text-lg font-bold font-outfit gradient-text leading-none">DevTools Pro</h1>
-              <p className="text-[11px] text-text-muted mt-0.5">{tools.length} tools · fully client-side · no sign-up</p>
             </div>
 
             <div className="flex-1 relative">

@@ -3,16 +3,15 @@ import Link from 'next/link';
 import { ChevronRight, Home } from 'lucide-react';
 
 interface ToolLayoutProps {
-  toolId: string;
   name: string;
   description: string;
   category: string;
   children: React.ReactNode;
 }
 
-export function ToolLayout({ toolId: _, name, description, category, children }: ToolLayoutProps) {
+export function ToolLayout({ name, description, category, children }: ToolLayoutProps) {
   return (
-    <div className="min-h-screen pt-16">
+    <div className="flex-1 pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-text-muted mb-6">

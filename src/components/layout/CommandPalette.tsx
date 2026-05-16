@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, FileJson, Lock, Hash, Clock, Regex, FileCode, Link2, CalendarClock, Type, Palette, KeyRound, Globe, AlignLeft, Binary, FileText } from 'lucide-react';
+import { Search, X, FileJson, Lock, Hash, Clock, Regex, FileCode, Link2, CalendarClock, Type, Palette, KeyRound, Globe, AlignLeft, Binary, ImageUp } from 'lucide-react';
 import { useAppStore } from '@/lib/store/useStore';
 import { Modal } from '@/components/ui/Modal';
 
@@ -15,6 +15,7 @@ const tools = [
   { id: 'base64', name: 'Base64 Encoder', description: 'Encode and decode Base64', icon: Lock, category: 'Encoding' },
   { id: 'url', name: 'URL Encoder', description: 'Encode and decode URLs', icon: Link2, category: 'Encoding' },
   { id: 'number-base', name: 'Base Converter', description: 'Convert decimal, hex, binary & octal', icon: Binary, category: 'Encoding' },
+  { id: 'image-base64', name: 'Image to Base64', description: 'Convert images to base64 data URLs', icon: ImageUp, category: 'Encoding' },
   { id: 'jwt', name: 'JWT Decoder', description: 'Decode and inspect JWT tokens', icon: Lock, category: 'Security' },
   { id: 'hash', name: 'Hash Generator', description: 'Generate SHA-256 & SHA-512 hashes', icon: Hash, category: 'Security' },
   { id: 'password', name: 'Password Generator', description: 'Generate strong passwords', icon: KeyRound, category: 'Security' },
@@ -22,7 +23,6 @@ const tools = [
   { id: 'cron', name: 'Cron Parser', description: 'Parse cron expressions to English', icon: CalendarClock, category: 'Date & Time' },
   { id: 'regex', name: 'Regex Tester', description: 'Test regex with live highlighting', icon: Regex, category: 'Text' },
   { id: 'uuid', name: 'UUID Generator', description: 'Generate UUID v4 identifiers', icon: Type, category: 'Text' },
-  { id: 'text', name: 'Text Case Converter', description: 'camelCase, snake_case, Title Case & more', icon: FileText, category: 'Text' },
   { id: 'lorem-ipsum', name: 'Lorem Ipsum', description: 'Generate placeholder text', icon: AlignLeft, category: 'Text' },
 ];
 
