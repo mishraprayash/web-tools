@@ -33,10 +33,10 @@ const categories = [
   {
     id: 'text',
     name: 'Text',
-    description: 'Regex, UUID, Case converter',
+    description: 'Regex, UUID, Lorem Ipsum',
     icon: Text,
     count: 3,
-    tools: ['regex', 'uuid', 'text'],
+    tools: ['regex', 'uuid', 'lorem-ipsum'],
   },
   {
     id: 'datetime',

@@ -17,21 +17,19 @@ const tools = [
   { id: 'uuid', name: 'UUID Generator', category: 'text' },
   { id: 'url', name: 'URL Encoder', category: 'encoding' },
   { id: 'cron', name: 'Cron Parser', category: 'datetime' },
-  { id: 'text', name: 'Text Case Converter', category: 'text' },
 ];
 
 const categories = [
   { id: 'encoding', name: 'Encoding', tools: ['base64', 'url'] },
   { id: 'security', name: 'Security', tools: ['jwt', 'hash'] },
   { id: 'formatting', name: 'Formatting', tools: ['json'] },
-  { id: 'text', name: 'Text', tools: ['regex', 'uuid', 'text'] },
+  { id: 'text', name: 'Text', tools: ['regex', 'uuid'] },
   { id: 'datetime', name: 'Date & Time', tools: ['timestamp', 'cron'] },
 ];
 
 export function Header() {
   const { theme, toggleTheme, setCommandPaletteOpen } = useAppStore();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
-  const [categoriesOpen, setCategoriesOpen] = React.useState(false);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -57,45 +55,6 @@ export function Header() {
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1">
-            <div className="relative">
-              <button
-                onClick={() => setCategoriesOpen(!categoriesOpen)}
-                className="px-3 py-1.5 text-sm text-text-secondary hover:text-text-primary transition-colors rounded-md hover:bg-bg-hover"
-              >
-                Tools
-              </button>
-              {categoriesOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="absolute top-full left-0 mt-2 w-48 py-2 rounded-lg border border-border bg-bg-secondary shadow-xl"
-                >
-                  {categories.map((cat) => (
-                    <div key={cat.id} className="px-3 py-2">
-                      <p className="text-xs text-text-muted uppercase tracking-wider mb-1">
-                        {cat.name}
-                      </p>
-                      {cat.tools.map((toolId) => {
-                        const tool = tools.find((t) => t.id === toolId);
-                        return tool ? (
-                          <Link
-                            key={toolId}
-                            href={`/tools/${toolId}`}
-                            className="block py-1.5 px-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-hover rounded transition-colors"
-                            onClick={() => setCategoriesOpen(false)}
-                          >
-                            {tool.name}
-                          </Link>
-                        ) : null;
-                      })}
-                    </div>
-                  ))}
-                </motion.div>
-              )}
-            </div>
-          </nav>
-
           <div className="flex items-center gap-2">
             <button
               onClick={() => setCommandPaletteOpen(true)}
@@ -112,7 +71,7 @@ export function Header() {
               onClick={() => setCommandPaletteOpen(true)}
               className="sm:hidden p-2 text-text-secondary hover:text-text-primary transition-colors"
             >
-              <Search className="h-5 w-5" />
+              {/* <Search className="h-5 w-5" /> */}
             </button>
 
             <a

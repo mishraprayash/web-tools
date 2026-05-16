@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Outfit, IBM_Plex_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { Header } from '@/components/layout/Header';
+import { Footer } from '@/components/layout/Footer';
+import { CommandPalette } from '@/components/layout/CommandPalette';
+import { Toaster } from '@/components/ui/Toast';
 import { ThemeSync } from "@/components/layout/ThemeSync";
 
 const outfit = Outfit({
@@ -40,7 +44,11 @@ export default function RootLayout({
     <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${outfit.variable} ${ibmPlexSans.variable} ${jetbrainsMono.variable} min-h-screen flex flex-col bg-bg-primary text-text-primary antialiased`}>
         <ThemeSync />
+        <Header />
         {children}
+        <Footer />
+        <CommandPalette />
+        <Toaster />
       </body>
     </html>
   );
