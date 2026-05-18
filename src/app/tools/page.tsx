@@ -5,7 +5,8 @@ import { motion } from 'framer-motion';
 import { 
   FileJson, Lock, Hash, Clock, Regex, Type, FileCode,
   Link2, CalendarClock, Palette, KeyRound,
-  Globe, AlignLeft, Binary, ArrowRight
+  Globe, AlignLeft, Binary, ArrowRight,
+  Earth, QrCode
 } from 'lucide-react';
 
 const tools = [
@@ -24,14 +25,16 @@ const tools = [
   { id: 'regex', name: 'Regex Tester', description: 'Test regex with live highlighting', icon: Regex, color: 'from-violet-500 to-purple-500', category: 'Text' },
   { id: 'uuid', name: 'UUID Generator', description: 'Generate UUID v4 identifiers', icon: Type, color: 'from-cyan-500 to-blue-500', category: 'Text' },
   { id: 'lorem-ipsum', name: 'Lorem Ipsum', description: 'Generate placeholder text', icon: AlignLeft, color: 'from-sky-500 to-indigo-500', category: 'Text' },
+  { id: 'timezone', name: 'Time Zone Converter', description: 'Convert time across timezones worldwide', icon: Earth, color: 'from-emerald-500 to-teal-500', category: 'Date & Time' },
+  { id: 'qr-code', name: 'QR Code Generator', description: 'Generate QR codes from text, URLs & more', icon: QrCode, color: 'from-fuchsia-500 to-pink-500', category: 'Encoding' },
 ];
 
 const categories = [
   { name: 'Formatting', tools: ['json', 'color', 'yaml-json', 'html-preview'] },
-  { name: 'Encoding', tools: ['base64', 'url', 'number-base'] },
+  { name: 'Encoding', tools: ['base64', 'url', 'number-base', 'qr-code'] },
   { name: 'Security', tools: ['jwt', 'hash', 'password'] },
   { name: 'Text', tools: ['regex', 'uuid', 'lorem-ipsum'] },
-  { name: 'Date & Time', tools: ['timestamp', 'cron'] },
+  { name: 'Date & Time', tools: ['timestamp', 'cron', 'timezone'] },
 ];
 
 export default function ToolsPage() {

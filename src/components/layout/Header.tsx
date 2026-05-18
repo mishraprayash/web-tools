@@ -17,14 +17,16 @@ const tools = [
   { id: 'uuid', name: 'UUID Generator', category: 'text' },
   { id: 'url', name: 'URL Encoder', category: 'encoding' },
   { id: 'cron', name: 'Cron Parser', category: 'datetime' },
+  { id: 'timezone', name: 'Time Zone Converter', category: 'datetime' },
+  { id: 'qr-code', name: 'QR Code Generator', category: 'encoding' },
 ];
 
 const categories = [
-  { id: 'encoding', name: 'Encoding', tools: ['base64', 'url'] },
+  { id: 'encoding', name: 'Encoding', tools: ['base64', 'url', 'qr-code'] },
   { id: 'security', name: 'Security', tools: ['jwt', 'hash'] },
   { id: 'formatting', name: 'Formatting', tools: ['json'] },
   { id: 'text', name: 'Text', tools: ['regex', 'uuid'] },
-  { id: 'datetime', name: 'Date & Time', tools: ['timestamp', 'cron'] },
+  { id: 'datetime', name: 'Date & Time', tools: ['timestamp', 'cron', 'timezone'] },
 ];
 
 export function Header() {

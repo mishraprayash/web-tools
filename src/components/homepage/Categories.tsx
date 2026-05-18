@@ -2,17 +2,17 @@
 
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { FileJson, Lock, Hash, Text, Link2, Clock, FileCode } from 'lucide-react';
+import { FileJson, Lock, Hash, Text, Clock } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 
 const categories = [
   {
     id: 'encoding',
     name: 'Encoding',
-    description: 'Base64, URL encoding',
+    description: 'Base64, URL, QR codes',
     icon: Lock,
-    count: 2,
-    tools: ['base64', 'url'],
+    count: 4,
+    tools: ['base64', 'url', 'number-base', 'qr-code'],
   },
   {
     id: 'security',
@@ -41,19 +41,11 @@ const categories = [
   {
     id: 'datetime',
     name: 'Date & Time',
-    description: 'Timestamp, Cron parser',
+    description: 'Timestamp, Cron, Timezone',
     icon: Clock,
-    count: 2,
-    tools: ['timestamp', 'cron'],
-  },
-  {
-    id: 'api',
-    name: 'API Utilities',
-    description: 'Request tester, HTTP codes',
-    icon: Link2,
-    count: 0,
-    tools: [],
-  },
+    count: 3,
+    tools: ['timestamp', 'cron', 'timezone'],
+  }
 ];
 
 export function Categories() {

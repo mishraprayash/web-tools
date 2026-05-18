@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, FileJson, Lock, Hash, Clock, Regex, FileCode, Link2, CalendarClock, Type, Palette, KeyRound, Globe, AlignLeft, Binary, ImageUp } from 'lucide-react';
+import { Search, X, FileJson, Lock, Hash, Clock, Regex, FileCode, Link2, CalendarClock, Type, Palette, KeyRound, Globe, AlignLeft, Binary, ImageUp, Earth, QrCode } from 'lucide-react';
 import { useAppStore } from '@/lib/store/useStore';
 import { Modal } from '@/components/ui/Modal';
 
@@ -24,6 +24,11 @@ const tools = [
   { id: 'regex', name: 'Regex Tester', description: 'Test regex with live highlighting', icon: Regex, category: 'Text' },
   { id: 'uuid', name: 'UUID Generator', description: 'Generate UUID v4 identifiers', icon: Type, category: 'Text' },
   { id: 'lorem-ipsum', name: 'Lorem Ipsum', description: 'Generate placeholder text', icon: AlignLeft, category: 'Text' },
+  { id: 'text-statistics', name: 'Text Statistics', description: 'Words, chars, lines & read time', icon: Search, category: 'Text' },
+  { id: 'slugify', name: 'Slugify', description: 'Generate URL-friendly slugs', icon: Link2, category: 'Text' },
+  { id: 'html-entities', name: 'HTML Entities', description: 'Encode or decode HTML entities', icon: FileCode, category: 'Formatting' },
+  { id: 'timezone', name: 'Time Zone Converter', description: 'Convert time across timezones', icon: Earth, category: 'Date & Time' },
+  { id: 'qr-code', name: 'QR Code Generator', description: 'Generate QR codes from text & URLs', icon: QrCode, category: 'Encoding' },
 ];
 
 export function CommandPalette() {

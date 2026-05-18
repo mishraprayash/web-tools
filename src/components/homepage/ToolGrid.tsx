@@ -7,6 +7,7 @@ import {
   FileJson, Lock, Hash, Clock, Regex, Type, Link2,
   CalendarClock, Palette, KeyRound, FileCode,
   Globe, AlignLeft, Binary, ImageUp, Search, ArrowRight, Command,
+  Earth, QrCode,
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
@@ -36,8 +37,13 @@ const tools: ToolDef[] = [
   { id: 'yaml-json', name: 'YAML ↔ JSON', description: 'Convert between YAML and JSON formats', category: 'Formatting', icon: FileCode, color: 'from-teal-500 to-emerald-500' },
   { id: 'html-preview', name: 'HTML Preview', description: 'Live render HTML with instant preview', category: 'Formatting', icon: Globe, color: 'from-orange-500 to-red-500' },
   { id: 'lorem-ipsum', name: 'Lorem Ipsum', description: 'Generate placeholder text in various lengths', category: 'Text', icon: AlignLeft, color: 'from-sky-500 to-indigo-500' },
+  { id: 'text-statistics', name: 'Text Statistics', description: 'Words, chars, lines & read time', category: 'Text', icon: Search, color: 'from-amber-400 to-yellow-500' },
+  { id: 'slugify', name: 'Slugify', description: 'Generate URL-friendly slugs from titles', category: 'Text', icon: Link2, color: 'from-cyan-400 to-blue-500' },
+  { id: 'html-entities', name: 'HTML Entities', description: 'Encode and decode HTML entities', category: 'Formatting', icon: FileCode, color: 'from-orange-400 to-rose-500' },
   { id: 'number-base', name: 'Base Converter', description: 'Convert between decimal, hex, binary & octal', category: 'Encoding', icon: Binary, color: 'from-violet-500 to-blue-500' },
   { id: 'image-base64', name: 'Image to Base64', description: 'Convert images to base64 data URLs', category: 'Encoding', icon: ImageUp, color: 'from-sky-500 to-teal-500' },
+  { id: 'timezone', name: 'Time Zone Converter', description: 'Convert time across timezones worldwide', category: 'Date & Time', icon: Earth, color: 'from-emerald-500 to-teal-500' },
+  { id: 'qr-code', name: 'QR Code Generator', description: 'Generate QR codes from text, URLs & more', category: 'Encoding', icon: QrCode, color: 'from-fuchsia-500 to-pink-500' }
 ];
 
 const categories = ['All', 'Formatting', 'Encoding', 'Security', 'Text', 'Date & Time'];

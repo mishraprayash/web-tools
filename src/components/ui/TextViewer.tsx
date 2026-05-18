@@ -77,6 +77,8 @@ interface TextViewerProps {
   maxHeight?: string;
   minHeight?: string;
   placeholder?: string;
+  // optional HTML rendering mode (safe: only spans with classes produced by our tokeniser)
+  renderHtml?: boolean;
 }
 
 export function TextViewer({
@@ -84,6 +86,7 @@ export function TextViewer({
   maxHeight = '480px',
   minHeight = '240px',
   placeholder = 'No output',
+  renderHtml = false,
 }: TextViewerProps) {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [activeIndex, setActiveIndex] = React.useState(0);
@@ -130,7 +133,11 @@ export function TextViewer({
         style={{ maxHeight, minHeight }}
       >
         {value ? (
-          highlighted
+          renderHtml ? (
+            <div className="prose text-sm" dangerouslySetInnerHTML={{ __html: value }} />
+          ) : (
+            highlighted
+          )
         ) : (
           <span className="text-text-muted">{placeholder}</span>
         )}
