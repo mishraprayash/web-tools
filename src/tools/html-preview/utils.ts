@@ -7,13 +7,50 @@ export function sanitizeHtml(input: string): string {
     .replace(/'/g, '&#039;');
 }
 
-export function wrapHtmlDocument(content: string): string {
-  const trimmed = content.trim();
-  if (/^<!DOCTYPE/i.test(trimmed) || /^<html/i.test(trimmed)) return trimmed;
-  if (/^<(head|body|div|p|h[1-6]|section|main|article|header|footer|nav|aside|table|form|ul|ol|script|style)/i.test(trimmed)) {
-    return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head><body>${trimmed}</body></html>`;
+export function wrapHtmlDocument(
+  content: string,
+  options: { tailwind: boolean; bootstrap: boolean; fontawesome: boolean } = { tailwind: false, bootstrap: false, fontawesome: false }
+): string {
+  let headInjections = '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">';
+  if (options.tailwind) {
+    headInjections += '\n  <script src="https://cdn.tailwindcss.com"></script>';
   }
-  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head><body>${trimmed}</body></html>`;
+  if (options.bootstrap) {
+    headInjections += '\n  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">';
+  }
+  if (options.fontawesome) {
+    headInjections += '\n  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">';
+  }
+  
+  const trimmed = content.trim();
+  if (/^<!DOCTYPE/i.test(trimmed) || /^<html/i.test(trimmed)) {
+    let result = trimmed;
+    if (options.tailwind || options.bootstrap || options.fontawesome) {
+      if (/<head>/i.test(result)) {
+        result = result.replace(/<head>/i, `<head>\n  ${headInjections}`);
+      } else if (/<html[^>]*>/i.test(result)) {
+        result = result.replace(/<html([^>]*)>/i, `<html$1>\n<head>\n  ${headInjections}\n</head>`);
+      }
+    }
+    return result;
+  }
+
+  // Set nice default styling class if using Tailwind, otherwise standard padding
+  const bodyClass = options.tailwind 
+    ? 'bg-slate-50 text-slate-900 p-6 font-sans antialiased' 
+    : options.bootstrap
+    ? 'bg-light text-dark p-4'
+    : 'font-family:sans-serif; padding: 20px; line-height: 1.6; background: #fafafa;';
+
+  return `<!DOCTYPE html>
+<html>
+<head>
+  ${headInjections}
+</head>
+<body ${options.tailwind || options.bootstrap ? `class="${bodyClass}"` : `style="${bodyClass}"`}>
+  ${trimmed}
+</body>
+</html>`;
 }
 
 export function formatHtml(input: string): string {
@@ -35,12 +72,12 @@ export function formatHtml(input: string): string {
 
   for (const line of normalized) {
     const isClosing = /^<\//.test(line);
-    const tagName = line.match(/^<\/?(\w+)/)?.[1];
+    const tagName = line.match(/^<\/?([a-zA-Z0-9:-]+)/)?.[1];
     const isSelfClosing = tagName ? selfClosing.test(tagName) || /\/>$/.test(line) : false;
 
     if (isClosing) indent = Math.max(0, indent - 1);
     result.push('  '.repeat(indent) + line);
-    if (!isClosing && !isSelfClosing && /^<[^/]/.test(line)) indent++;
+    if (!isClosing && !isSelfClosing && /^<[a-zA-Z0-9:-]+/.test(line)) indent++;
   }
 
   return result.join('\n');
