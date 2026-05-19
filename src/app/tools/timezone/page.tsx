@@ -1,14 +1,14 @@
 'use client';
 
 import * as React from 'react';
-import { ArrowLeftRight, Clock, Search, Check } from 'lucide-react';
+import { ArrowLeftRight, Clock, Search, Check, Calendar, Sun, Moon, Briefcase } from 'lucide-react';
 import { ToolLayout } from '@/components/tool/ToolLayout';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
-import { convertTime, getCommonTimezones, getGroupedTimezones, type TimezoneInfo } from '@/tools/timezone/utils';
+import { convertTime, getCommonTimezones, getGroupedTimezones, getTimezoneOffsetStr, type TimezoneInfo } from '@/tools/timezone/utils';
 
 const commonTzs = getCommonTimezones();
-const LOCAL_TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
+const LOCAL_TZ = typeof window !== 'undefined' ? Intl.DateTimeFormat().resolvedOptions().timeZone : 'UTC';
 
 function formatLocalDateTime(date: Date): string {
   const y = date.getFullYear();
@@ -24,6 +24,12 @@ export default function Page() {
   const [toTz, setToTz] = React.useState('UTC');
   const [dateStr, setDateStr] = React.useState(() => formatLocalDateTime(new Date()));
   const [resultIndex, setResultIndex] = React.useState(0);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+    setFromTz(Intl.DateTimeFormat().resolvedOptions().timeZone);
+  }, []);
 
   const grouped = React.useMemo(() => getGroupedTimezones(), []);
 
@@ -49,36 +55,67 @@ export default function Page() {
     setDateStr(formatLocalDateTime(new Date()));
   }, []);
 
+  // Compute hour mappings for meeting planner
+  const plannerTimeline = React.useMemo(() => {
+    const baseDate = new Date(dateStr);
+    const getHoursForZone = (targetTz: string) => {
+      const arr = [];
+      for (let h = 0; h < 24; h++) {
+        const temp = new Date(baseDate);
+        temp.setHours(h, 0, 0, 0);
+        try {
+          const parts = new Intl.DateTimeFormat('en-US', {
+            timeZone: targetTz,
+            hour: 'numeric',
+            hour12: false,
+          }).formatToParts(temp);
+          const hrPart = parts.find(p => p.type === 'hour');
+          arr.push(hrPart ? parseInt(hrPart.value, 10) % 24 : h);
+        } catch {
+          arr.push(h);
+        }
+      }
+      return arr;
+    };
+
+    return {
+      fromHours: getHoursForZone(fromTz),
+      toHours: getHoursForZone(toTz),
+    };
+  }, [dateStr, fromTz, toTz]);
+
   return (
-    <ToolLayout name="Time Zone Converter" description="Convert time across time zones around the world" category="Date & Time">
+    <ToolLayout name="Time Zone Converter" description="Convert time between world zones and plan overlapping meetings visually" category="Date & Time">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={() => setResultIndex(0)}
               className={resultIndex === 0 ? 'text-accent' : ''}>
-              From
+              Target: To
             </Button>
             <span className="text-text-muted text-sm">→</span>
             <Button variant="ghost" size="sm" onClick={() => setResultIndex(1)}
               className={resultIndex === 1 ? 'text-accent' : ''}>
-              To
+              Source: From
             </Button>
           </div>
 
           <div className="flex items-end gap-2">
             <div className="flex-1">
-              <label className="text-xs text-text-muted mb-1.5 block">From</label>
-              <SearchableTimezoneSelect value={fromTz} onChange={setFromTz} groups={grouped} />
+              <label className="text-xs text-text-muted mb-1.5 block">From (Source)</label>
+              {mounted && <SearchableTimezoneSelect value={fromTz} onChange={setFromTz} groups={grouped} />}
             </div>
 
             <button onClick={swapTimezones}
-              className="p-2 rounded-lg bg-bg-tertiary border border-border hover:border-accent transition-colors mb-0.5">
+              className="p-2 rounded-lg bg-bg-tertiary border border-border hover:border-accent transition-colors mb-0.5"
+              title="Swap timezone roles"
+            >
               <ArrowLeftRight className="h-4 w-4 text-text-secondary" />
             </button>
 
             <div className="flex-1">
-              <label className="text-xs text-text-muted mb-1.5 block">To</label>
-              <SearchableTimezoneSelect value={toTz} onChange={setToTz} groups={grouped} />
+              <label className="text-xs text-text-muted mb-1.5 block">To (Destination)</label>
+              {mounted && <SearchableTimezoneSelect value={toTz} onChange={setToTz} groups={grouped} />}
             </div>
           </div>
 
@@ -94,13 +131,13 @@ export default function Page() {
                   )} />
               </div>
               <Button variant="secondary" size="sm" onClick={setNow}>
-                Now
+                Current Time
               </Button>
             </div>
           </div>
 
           <div>
-            <label className="text-xs text-text-muted mb-1.5 block">Quick Convert</label>
+            <label className="text-xs text-text-muted mb-1.5 block">Quick Select</label>
             <div className="flex flex-wrap gap-1.5">
               {commonTzs.slice(0, 8).map((tz) => (
                 <button key={tz.name} onClick={() => pickCommon(tz.name)}
@@ -117,35 +154,38 @@ export default function Page() {
 
           {result.success ? (
             <div className="space-y-4">
-              <div className="p-6 rounded-xl bg-bg-tertiary border border-border">
+              <div className="p-5 rounded-xl bg-bg-tertiary border border-border shadow-sm">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-text-muted">{result.source.offset}</span>
+                  <span className="text-xs font-bold text-text-muted uppercase tracking-wider">{result.source.abbr} ({result.source.offset})</span>
                   <span className="text-xs text-text-muted">{result.source.label}</span>
                 </div>
-                <p className="text-lg font-semibold font-outfit">{result.sourceTime}</p>
+                <p className="text-base font-semibold font-outfit text-text-primary">{result.sourceTime}</p>
               </div>
 
-              <div className="flex justify-center">
-                <ArrowLeftRight className="h-5 w-5 text-accent" />
+              <div className="flex justify-center select-none">
+                <ArrowLeftRight className="h-4 w-4 text-accent" />
               </div>
 
-              <div className="p-6 rounded-xl bg-accent/5 border border-accent/30">
+              <div className="p-5 rounded-xl bg-accent/5 border border-accent/30 shadow-sm relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-1 bg-accent/10 rounded-bl-lg text-[9px] text-accent font-bold uppercase tracking-wider px-2.5">
+                  Result
+                </div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-text-muted">{result.target.offset}</span>
+                  <span className="text-xs font-bold text-text-muted uppercase tracking-wider">{result.target.abbr} ({result.target.offset})</span>
                   <span className="text-xs text-text-muted">{result.target.label}</span>
                 </div>
-                <p className="text-lg font-semibold font-outfit text-accent">{result.targetTime}</p>
+                <p className="text-base font-semibold font-outfit text-accent">{result.targetTime}</p>
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-40 rounded-lg bg-bg-tertiary text-text-muted text-sm">
+            <div className="flex items-center justify-center h-40 rounded-lg bg-bg-tertiary text-text-muted text-sm italic">
               {result.error}
             </div>
           )}
 
-          <div className="p-5 rounded-xl bg-bg-secondary border border-border">
-            <h3 className="text-sm font-medium mb-2 flex items-center gap-2">
-              <Clock className="h-4 w-4 text-accent" /> Common Conversions
+          <div className="p-4 rounded-xl bg-bg-secondary border border-border">
+            <h3 className="text-xs font-semibold mb-2.5 flex items-center gap-1.5 text-text-secondary">
+              <Clock className="h-4 w-4 text-accent" /> Global Comparison Grid
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {commonTzs.map((tz) => {
@@ -153,14 +193,82 @@ export default function Page() {
                 if (!c.success) return null;
                 const shortName = tz.abbr || (tz.name.split('/').pop() ?? '');
                 return (
-                  <div key={tz.name} className="p-2 rounded-lg bg-bg-tertiary text-xs">
-                    <span className="text-text-muted">{shortName}</span>
-                    <p className="font-mono text-text-primary">{c.targetTime.split(' at ')[1] || c.targetTime}</p>
+                  <div key={tz.name} className="p-2 rounded-lg bg-bg-tertiary border border-border/40 text-xs">
+                    <span className="text-text-muted text-[10px] uppercase font-bold tracking-wider">{shortName}</span>
+                    <p className="font-mono text-text-primary mt-0.5">{c.targetTime.split(' at ')[1] || c.targetTime}</p>
                   </div>
                 );
               })}
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Visual Timeline Meeting Planner */}
+      <div className="p-5 rounded-xl bg-bg-secondary border border-border mt-8 space-y-4 shadow-sm animate-slide-up">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <div>
+            <h3 className="text-base font-semibold font-outfit text-text-primary">Meeting & Collaboration Planner</h3>
+            <p className="text-xs text-text-muted">Compare hour-by-hour availability between both zones. Click any block to shift the clock.</p>
+          </div>
+          <div className="hidden sm:flex items-center gap-3.5 text-xs text-text-muted">
+            <span className="flex items-center gap-1"><Sun className="h-3.5 w-3.5 text-success" /> Work (9am-5pm)</span>
+            <span className="flex items-center gap-1"><Briefcase className="h-3.5 w-3.5 text-warning" /> Off-hours</span>
+            <span className="flex items-center gap-1"><Moon className="h-3.5 w-3.5 text-error" /> Sleep (10pm-6am)</span>
+          </div>
+        </div>
+
+        <div className="space-y-4 overflow-x-auto pb-2 scrollbar-hide">
+          {[
+            { role: 'From: Source', name: fromTz, hours: plannerTimeline.fromHours },
+            { role: 'To: Target', name: toTz, hours: plannerTimeline.toHours }
+          ].map((zone) => {
+            const shortTzName = zone.name.split('/').pop()?.replace(/_/g, ' ') || zone.name;
+            const currentHour = new Date(dateStr).getHours();
+
+            return (
+              <div key={zone.name} className="min-w-[800px] flex items-center gap-4">
+                <div className="w-48 shrink-0">
+                  <p className="text-[10px] font-bold text-text-muted uppercase tracking-wider">{zone.role}</p>
+                  <p className="text-xs font-bold truncate text-text-primary mt-0.5">{shortTzName}</p>
+                  <p className="text-[10px] font-mono text-text-muted">{getTimezoneOffsetStr(zone.name, new Date(dateStr))}</p>
+                </div>
+
+                <div className="flex items-center gap-1 flex-1">
+                  {zone.hours.map((displayHour, hourIdx) => {
+                    const isSleep = displayHour >= 22 || displayHour < 6;
+                    const isWork = displayHour >= 9 && displayHour < 17;
+
+                    const isCurrent = hourIdx === currentHour;
+
+                    const boxClass = cn(
+                      'flex-1 flex flex-col items-center justify-center py-2 px-1 rounded-md text-[10px] border transition-all h-14 cursor-pointer select-none',
+                      isSleep && 'bg-error/5 text-error/80 border-error/20 hover:bg-error/15',
+                      isWork && 'bg-success/10 text-success font-semibold border-success/30 hover:bg-success/20',
+                      !isSleep && !isWork && 'bg-warning/5 text-warning/80 border-warning/20 hover:bg-warning/15',
+                      isCurrent && 'ring-2 ring-accent ring-offset-2 ring-offset-bg-primary font-bold border-accent/50 scale-105'
+                    );
+
+                    return (
+                      <button
+                        key={hourIdx}
+                        onClick={() => {
+                          const temp = new Date(dateStr);
+                          temp.setHours(hourIdx);
+                          setDateStr(formatLocalDateTime(temp));
+                        }}
+                        className={boxClass}
+                        title={`Select ${hourIdx}:00 in source timezone`}
+                      >
+                        <span className="font-mono text-xs">{String(displayHour).padStart(2, '0')}</span>
+                        <span className="text-[8px] opacity-70 mt-0.5">{displayHour >= 12 ? 'PM' : 'AM'}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </ToolLayout>
