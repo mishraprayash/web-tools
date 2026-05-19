@@ -53,13 +53,20 @@ export default function Page() {
         <div className="space-y-3">
           <label className="text-sm text-text-secondary">Algorithm</label>
           <div className="flex flex-wrap gap-2">
-            {hashAlgorithms.slice(2).map(a => (
+            {hashAlgorithms.map(a => (
               <Button key={a.id} variant={algorithm === a.id ? 'primary' : 'secondary'} size="sm"
                 onClick={() => setAlgorithm(a.id)}>
                 {a.name}
               </Button>
             ))}
           </div>
+
+          {!hashAlgorithms.find(a => a.id === algorithm)?.secure && (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-warning/10 text-warning border border-warning/20 text-xs">
+              <AlertTriangle className="h-4 w-4 shrink-0" />
+              <span>{algorithm} is cryptographically weak. Use only for legacy compatibility or quick checksums, not for passwords or credentials.</span>
+            </div>
+          )}
         </div>
 
         {error && (
