@@ -7,7 +7,7 @@ import {
   FileJson, Lock, Hash, Clock, Regex, Type, Link2,
   CalendarClock, Palette, KeyRound, FileCode,
   Globe, AlignLeft, Binary, ImageUp, Search, ArrowRight, Command,
-  Earth, QrCode, Braces, Code, GitCompare, Ruler, CalendarPlus, SunMoon, Fingerprint, Shield, Laptop, Layers, Grid, Star, LayoutGrid, List as ListIcon, History
+  Earth, QrCode, Braces, Code, GitCompare, Ruler, CalendarPlus, SunMoon, Fingerprint, Shield, Laptop, Layers, Grid, Star, LayoutGrid, List as ListIcon, History, TerminalSquare
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
@@ -31,6 +31,7 @@ const tools: ToolDef[] = [
   { id: 'date-toolbox', name: 'Date, Time & Epoch Sandbox', description: 'Parse Unix epoch timestamps, convert timezones, and calculate calendar offsets', category: 'Date & Time', icon: Clock, color: 'from-rose-500 to-red-500' },
   { id: 'regex', name: 'Regex Tester', description: 'Live match highlighting with group capture', category: 'Text', icon: Regex, color: 'from-violet-500 to-purple-500' },
   { id: 'uuid', name: 'UUID Generator', description: 'Generate bulk UUID v4 identifiers instantly', category: 'Text', icon: Type, color: 'from-cyan-500 to-blue-500' },
+  { id: 'curl-converter', name: 'cURL Converter', description: 'Convert cURL commands to Fetch, Axios, Python & Go', category: 'Encoding', icon: TerminalSquare, color: 'from-fuchsia-500 to-pink-500' },
   { id: 'aes', name: 'AES Encrypt/Decrypt', description: 'Encrypt & decrypt text using AES CBC/CTR modes', category: 'Security', icon: Shield, color: 'from-zinc-500 to-indigo-500' },
   { id: 'cron', name: 'Cron Parser', description: 'Translate cron expressions to plain English', category: 'Date & Time', icon: CalendarClock, color: 'from-indigo-500 to-blue-500' },
   { id: 'color', name: 'Color Converter', description: 'Convert between hex, RGB & HSL colour formats', category: 'Formatting', icon: Palette, color: 'from-pink-500 to-purple-500' },

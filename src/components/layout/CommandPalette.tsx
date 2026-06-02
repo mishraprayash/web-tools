@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, FileJson, Lock, Hash, Clock, Regex, FileCode, Link2, CalendarClock, Type, Palette, KeyRound, Globe, AlignLeft, Binary, ImageUp, Earth, QrCode, Braces, Code, GitCompare, Ruler, CalendarPlus, SunMoon, Fingerprint, Shield, Laptop, Layers, Grid, Star, History } from 'lucide-react';
+import { Search, X, FileJson, Lock, Hash, Clock, Regex, FileCode, Link2, CalendarClock, Type, Palette, KeyRound, Globe, AlignLeft, Binary, ImageUp, Earth, QrCode, Braces, Code, GitCompare, Ruler, CalendarPlus, SunMoon, Fingerprint, Shield, Laptop, Layers, Grid, Star, History, TerminalSquare } from 'lucide-react';
 import { useAppStore } from '@/lib/store/useStore';
 import { Modal } from '@/components/ui/Modal';
 
@@ -17,6 +17,7 @@ const tools = [
   { id: 'number-base', name: 'Base Converter', description: 'Convert decimal, hex, binary & octal', icon: Binary, category: 'Encoding' },
   { id: 'image-base64', name: 'Image to Base64', description: 'Convert images to base64 data URLs', icon: ImageUp, category: 'Encoding' },
   { id: 'jwt', name: 'JWT Decoder', description: 'Decode and inspect JWT tokens', icon: Lock, category: 'Security' },
+  { id: 'curl-converter', name: 'cURL Converter', description: 'Convert cURL commands to Fetch, Axios, Python & Go', icon: TerminalSquare, category: 'Encoding' },
   { id: 'hash', name: 'Hash Generator', description: 'Generate SHA-256 & SHA-512 hashes', icon: Hash, category: 'Security' },
   { id: 'password', name: 'Password Generator', description: 'Generate strong passwords', icon: KeyRound, category: 'Security' },
   { id: 'date-toolbox', name: 'Date, Time & Epoch Sandbox', description: 'Parse Unix epoch timestamps, convert timezones, and calculate calendar offsets', icon: Clock, category: 'Date & Time' },

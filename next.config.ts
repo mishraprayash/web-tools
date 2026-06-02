@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  serverExternalPackages: ['curlconverter', 'tree-sitter-bash', 'web-tree-sitter'],
 };
 
 export default nextConfig;
