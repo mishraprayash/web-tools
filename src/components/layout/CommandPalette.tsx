@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, FileJson, Lock, Hash, Clock, Regex, FileCode, Link2, CalendarClock, Type, Palette, KeyRound, Globe, AlignLeft, Binary, ImageUp, Earth, QrCode, Braces, Code, GitCompare, Ruler, CalendarPlus, SunMoon, Fingerprint, Shield, Laptop, Layers, Grid, Star, History, TerminalSquare } from 'lucide-react';
+import { Search, X, FileJson, Lock, Hash, Clock, Regex, FileCode, Link2, CalendarClock, Type, Palette, KeyRound, Globe, AlignLeft, Binary, ImageUp, Earth, QrCode, Braces, Code, GitCompare, Ruler, CalendarPlus, SunMoon, Fingerprint, Shield, Laptop, Layers, Grid, Star, History, TerminalSquare, Database, GitBranch, Calculator, Bot, FileMinus } from 'lucide-react';
 import { useAppStore } from '@/lib/store/useStore';
 import { Modal } from '@/components/ui/Modal';
 
@@ -37,6 +37,18 @@ const tools = [
   { id: 'user-agent', name: 'User-Agent Parser', description: 'Deconstruct browser User-Agent strings and inspect client metrics', icon: Laptop, category: 'Date & Time' },
   { id: 'json-schema', name: 'JSON Schema Generator', description: 'Generate standard draft validation schemas from raw JSON payloads', icon: Layers, category: 'Formatting' },
   { id: 'css-sandbox', name: 'CSS Flexbox & Grid visual sandbox', description: 'Prototype CSS Flex and Grid structures visually with Tailwind and CSS code outputs', icon: Grid, category: 'Formatting' },
+  { id: 'http-status', name: 'HTTP Status Code Glossary', description: 'A searchable reference tool for all HTTP status codes', icon: Globe, category: 'Encoding' },
+  { id: 'bcrypt', name: 'Bcrypt Generator & Checker', description: 'Quickly generate and verify Bcrypt hashes with configurable salt rounds', icon: Shield, category: 'Security' },
+  { id: 'mock-data', name: 'Mock Data Generator', description: 'Generate robust random JSON or CSV data arrays based on custom schemas', icon: Database, category: 'Formatting' },
+  { id: 'git-generator', name: 'Git Command Generator', description: 'Visually construct complex Git commands with clear explanations', icon: GitBranch, category: 'Text' },
+  { id: 'llm-pricing', name: 'LLM Pricing Calculator', description: 'Compare token costs across major AI models like GPT-4o, Claude 3.5, and Gemini', icon: Calculator, category: 'Text' },
+  { id: 'prompt-builder', name: 'System Prompt Builder', description: 'Structure and generate high-quality system prompts for LLMs', icon: Bot, category: 'Text' },
+  { id: 'gitignore', name: '.gitignore Generator', description: 'Select OS, IDEs, and languages to compile a complete .gitignore file', icon: FileMinus, category: 'Text' },
+  { id: 'graphql-to-ts', name: 'GraphQL to TypeScript', description: 'Paste a GraphQL schema and instantly generate strict TypeScript types', icon: Braces, category: 'Formatting' },
+  { id: 'jsonpath', name: 'JSONPath Playground', description: 'Filter and query JSON payloads with JSONPath expressions in real-time', icon: Braces, category: 'Formatting' },
+  { id: 'sql-prettify', name: 'SQL Formatter & Prettifier', description: 'Format and beautify SQL statements with configurable casing', icon: Database, category: 'Formatting' },
+  { id: 'sql-to-orm', name: 'SQL to ORM Entity Generator', description: 'Generate typed ORM models from raw SQL CREATE TABLE schemas', icon: Code, category: 'Formatting' },
+  { id: 'docker-converter', name: 'Docker Run ↔ Compose Converter', description: 'Translate Docker run commands to compose configurations, and vice-versa', icon: Layers, category: 'Formatting' }
 ];
 
 export function CommandPalette() {

@@ -7,7 +7,7 @@ import {
   FileJson, Lock, Hash, Clock, Regex, Type, Link2,
   CalendarClock, Palette, KeyRound, FileCode,
   Globe, AlignLeft, Binary, ImageUp, Search, ArrowRight, Command,
-  Earth, QrCode, Braces, Code, GitCompare, Ruler, CalendarPlus, SunMoon, Fingerprint, Shield, Laptop, Layers, Grid, Star, LayoutGrid, List as ListIcon, History, TerminalSquare
+  Earth, QrCode, Braces, Code, GitCompare, Ruler, CalendarPlus, SunMoon, Fingerprint, Shield, Laptop, Layers, Grid, Star, LayoutGrid, List as ListIcon, History, TerminalSquare, Database, GitBranch, Calculator, Bot, Sparkles, FileMinus
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
@@ -21,6 +21,7 @@ interface ToolDef {
   category: string;
   color: string;
   icon: React.ElementType;
+  isNew?: boolean;
 }
 
 const tools: ToolDef[] = [
@@ -52,10 +53,22 @@ const tools: ToolDef[] = [
   { id: 'rsa-sandbox', name: 'RSA Sandbox', description: 'Generate public/private keys, sign messages & cryptographically verify payloads', category: 'Security', icon: Shield, color: 'from-indigo-500 to-purple-500' },
   { id: 'user-agent', name: 'User-Agent Parser', description: 'Deconstruct browser User-Agent strings and inspect client metrics', category: 'Date & Time', icon: Laptop, color: 'from-teal-500 to-emerald-500' },
   { id: 'json-schema', name: 'JSON Schema Generator', description: 'Generate standard draft validation schemas from raw JSON payloads', category: 'Formatting', icon: Layers, color: 'from-amber-500 to-orange-500' },
-  { id: 'css-sandbox', name: 'CSS Flexbox & Grid visual sandbox', description: 'Prototype CSS Flex and Grid structures visually with Tailwind and CSS code outputs', category: 'Formatting', icon: Grid, color: 'from-fuchsia-500 to-pink-500' }
+  { id: 'css-sandbox', name: 'CSS Flexbox & Grid visual sandbox', description: 'Prototype CSS Flex and Grid structures visually with Tailwind and CSS code outputs', category: 'Formatting', icon: Grid, color: 'from-fuchsia-500 to-pink-500' },
+  { id: 'http-status', name: 'HTTP Status Code Glossary', description: 'A searchable reference tool for all HTTP status codes', category: 'Encoding', icon: Globe, color: 'from-blue-500 to-cyan-500', isNew: true },
+  { id: 'bcrypt', name: 'Bcrypt Generator & Checker', description: 'Quickly generate and verify Bcrypt hashes with configurable salt rounds', category: 'Security', icon: Shield, color: 'from-rose-500 to-pink-600', isNew: true },
+  { id: 'mock-data', name: 'Mock Data Generator', description: 'Generate robust random JSON or CSV data arrays based on custom schemas', category: 'Formatting', icon: Database, color: 'from-violet-500 to-fuchsia-500', isNew: true },
+  { id: 'git-generator', name: 'Git Command Generator', description: 'Visually construct complex Git commands with clear explanations', category: 'Text', icon: GitBranch, color: 'from-orange-500 to-red-500', isNew: true },
+  { id: 'llm-pricing', name: 'LLM Pricing Calculator', description: 'Compare token costs across major AI models like GPT-4o, Claude 3.5, and Gemini', category: 'Text', icon: Calculator, color: 'from-teal-400 to-emerald-600', isNew: true },
+  { id: 'prompt-builder', name: 'System Prompt Builder', description: 'Structure and generate high-quality system prompts for LLMs', category: 'Text', icon: Bot, color: 'from-purple-500 to-indigo-500', isNew: true },
+  { id: 'gitignore', name: '.gitignore Generator', description: 'Select OS, IDEs, and languages to compile a complete .gitignore file', category: 'Text', icon: FileMinus, color: 'from-orange-500 to-amber-500', isNew: true },
+  { id: 'graphql-to-ts', name: 'GraphQL to TypeScript', description: 'Paste a GraphQL schema and instantly generate strict TypeScript types', category: 'Formatting', icon: Braces, color: 'from-pink-500 to-rose-500', isNew: true },
+  { id: 'jsonpath', name: 'JSONPath Playground', description: 'Filter and query JSON payloads with JSONPath expressions in real-time', category: 'Formatting', icon: Braces, color: 'from-blue-500 to-indigo-500', isNew: true },
+  { id: 'sql-prettify', name: 'SQL Formatter & Prettifier', description: 'Format and beautify SQL statements with configurable casing', category: 'Formatting', icon: Database, color: 'from-sky-500 to-blue-500', isNew: true },
+  { id: 'sql-to-orm', name: 'SQL to ORM Entity Generator', description: 'Generate typed ORM models from raw SQL CREATE TABLE schemas', category: 'Formatting', icon: Code, color: 'from-teal-500 to-emerald-500', isNew: true },
+  { id: 'docker-converter', name: 'Docker Run ↔ Compose Converter', description: 'Translate Docker run commands to compose configurations, and vice-versa', category: 'Formatting', icon: Layers, color: 'from-cyan-500 to-blue-500', isNew: true }
 ];
 
-const categories = ['All', 'Formatting', 'Encoding', 'Security', 'Text', 'Date & Time'];
+const categories = ['All', 'New', 'Formatting', 'Encoding', 'Security', 'Text', 'Date & Time'];
 
 const container = {
   hidden: { opacity: 0 },
@@ -105,6 +118,11 @@ const ToolItem = React.memo(function ToolItem({ tool, viewMode }: ToolItemProps)
                 <span className="text-[10px] text-text-muted bg-bg-tertiary border border-border px-2 py-0.5 rounded-full whitespace-nowrap hidden sm:inline-block">
                   {tool.category}
                 </span>
+                {tool.isNew && (
+                  <span className="text-[9px] font-bold text-white bg-accent px-1.5 py-0.5 rounded-full whitespace-nowrap">
+                    NEW
+                  </span>
+                )}
               </div>
               <p className="mt-0.5 text-xs text-text-secondary truncate">
                 {tool.description}
@@ -172,6 +190,11 @@ const ToolItem = React.memo(function ToolItem({ tool, viewMode }: ToolItemProps)
               <span className="text-[10px] text-text-muted bg-bg-hover border border-border px-2 py-0.5 rounded-full whitespace-nowrap leading-relaxed">
                 {tool.category}
               </span>
+              {tool.isNew && (
+                <span className="text-[9px] font-bold text-white bg-accent px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm">
+                  NEW
+                </span>
+              )}
             </div>
           </div>
           <div className="mt-3 flex-1">
@@ -233,7 +256,11 @@ export function ToolGrid() {
   const filtered = React.useMemo(() => {
     const q = query.toLowerCase().trim();
     return tools.filter((t) => {
-      const matchesCat = activeCategory === 'All' || t.category === activeCategory;
+      const matchesCat = activeCategory === 'All' 
+        ? true 
+        : activeCategory === 'New' 
+          ? t.isNew 
+          : t.category === activeCategory;
       const matchesQ = !q || t.name.toLowerCase().includes(q) || t.description.toLowerCase().includes(q) || t.category.toLowerCase().includes(q);
       return matchesCat && matchesQ;
     });
@@ -242,7 +269,7 @@ export function ToolGrid() {
   const handleClear = React.useCallback(() => { setQuery(''); setActiveCategory('All'); }, []);
 
   const categoryCounts = React.useMemo(() => {
-    const counts: Record<string, number> = { All: tools.length };
+    const counts: Record<string, number> = { All: tools.length, New: tools.filter(t => t.isNew).length };
     for (const t of tools) {
       counts[t.category] = (counts[t.category] || 0) + 1;
     }
@@ -360,9 +387,10 @@ export function ToolGrid() {
                 <div className="space-y-6">
                   {recentToolsData.length > 0 && renderToolGroup("Jump Back In", recentToolsData, <History className="h-4.5 w-4.5 text-blue-500" />)}
                   {favoriteTools.length > 0 && renderToolGroup("Favorites", favoriteTools, <Star className="h-4.5 w-4.5 text-amber-500 fill-amber-500" />)}
+                  {renderToolGroup("Recently Added", tools.filter(t => t.isNew), <Sparkles className="h-4.5 w-4.5 text-fuchsia-500" />)}
                   
                   {/* Render by Category */}
-                  {categories.filter(c => c !== 'All').map(cat => {
+                  {categories.filter(c => c !== 'All' && c !== 'New').map(cat => {
                     const catTools = tools.filter(t => t.category === cat);
                     return <React.Fragment key={cat}>{renderToolGroup(cat, catTools)}</React.Fragment>;
                   })}
