@@ -7,7 +7,7 @@ import {
   FileJson, Lock, Hash, Clock, Regex, Type, Link2,
   CalendarClock, Palette, KeyRound, FileCode,
   Globe, AlignLeft, Binary, ImageUp, Search, ArrowRight, Command,
-  Earth, QrCode, Braces, Code, GitCompare, Ruler, CalendarPlus, SunMoon, Fingerprint, Shield, Laptop, Layers, Grid, Star, LayoutGrid, List as ListIcon, History, TerminalSquare, Database, GitBranch, Calculator, Bot, Sparkles, FileMinus
+  Earth, QrCode, Braces, Code, GitCompare, Ruler, CalendarPlus, SunMoon, Fingerprint, Shield, Laptop, Layers, Grid, Star, LayoutGrid, List as ListIcon, History, TerminalSquare, Database, GitBranch, Calculator, Bot, Sparkles, FileMinus, Network, Cpu
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/lib/utils';
@@ -20,11 +20,17 @@ interface ToolDef {
   description: string;
   category: string;
   color: string;
-  icon: React.ElementType;
+    icon: React.ElementType;
   isNew?: boolean;
 }
 
 const tools: ToolDef[] = [
+  { id: 'chmod', name: 'Chmod Calculator', description: 'Convert and calculate Unix octal, symbolic, and text permissions', category: 'Security', icon: Shield, color: 'from-blue-500 to-indigo-600', isNew: true },
+  { id: 'subnet', name: 'IP Subnet Calculator', description: 'Calculate CIDR subnets, mask values, usable hosts and network boundaries', category: 'Network', icon: Network, color: 'from-cyan-500 to-blue-500', isNew: true },
+  { id: 'mask-converter', name: 'Subnet Mask Converter', description: 'Convert bidirectionally between CIDR, Subnet Masks, and Wildcard Masks', category: 'Network', icon: Layers, color: 'from-teal-500 to-emerald-600', isNew: true },
+  { id: 'ipv6', name: 'IPv6 Address Helper', description: 'Expand, compress, validate, and parse reverse DNS lookup keys', category: 'Network', icon: Globe, color: 'from-blue-500 to-cyan-500', isNew: true },
+  { id: 'mac-lookup', name: 'MAC Address Lookup', description: 'Vendor, transmission, and admin classification check', category: 'Network', icon: Cpu, color: 'from-purple-500 to-indigo-500', isNew: true },
+  { id: 'dns-decoder', name: 'DNS Record Decoder', description: 'Parse queries and response headers from binary DNS HEX streams', category: 'Network', icon: Globe, color: 'from-emerald-500 to-teal-600', isNew: true },
   { id: 'json', name: 'JSON Beautifier', description: 'Format, minify, sort keys & validate JSON', category: 'Formatting', icon: FileJson, color: 'from-amber-500 to-orange-500' },
   { id: 'encoder', name: 'Encoder & Decoder Sandbox', description: 'Encode & decode values via Base64, URL component, and HTML entities', category: 'Encoding', icon: Lock, color: 'from-blue-500 to-cyan-500' },
   { id: 'jwt', name: 'JWT Decoder', description: 'Inspect header, payload & expiry of any JWT', category: 'Security', icon: Lock, color: 'from-purple-500 to-pink-500' },
@@ -68,7 +74,7 @@ const tools: ToolDef[] = [
   { id: 'docker-converter', name: 'Docker Run ↔ Compose Converter', description: 'Translate Docker run commands to compose configurations, and vice-versa', category: 'Formatting', icon: Layers, color: 'from-cyan-500 to-blue-500', isNew: true }
 ];
 
-const categories = ['All', 'New', 'Formatting', 'Encoding', 'Security', 'Text', 'Date & Time'];
+const categories = ['All', 'New', 'Formatting', 'Encoding', 'Security', 'Network', 'Text', 'Date & Time'];
 
 const container = {
   hidden: { opacity: 0 },
@@ -162,9 +168,11 @@ const ToolItem = React.memo(function ToolItem({ tool, viewMode }: ToolItemProps)
   return (
     <motion.div variants={cardVariant} className="h-full">
       <Link href={`/tools/${tool.id}`} onClick={() => addRecentTool(tool.id)} className="block h-full">
-        <Card hover className="h-full p-5 group cursor-pointer flex flex-col">
+        <Card hover glass className="h-full p-5 group cursor-pointer flex flex-col relative overflow-hidden">
+          {/* Subtle card-specific glow element */}
+          <div className={cn("absolute top-0 right-0 w-24 h-24 rounded-full bg-gradient-to-br opacity-0 group-hover:opacity-[0.06] transition-opacity duration-300 blur-xl pointer-events-none", tool.color)} />
           <div className="flex items-start justify-between gap-2">
-            <div className={cn('w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110', tool.color)}>
+            <div className={cn('w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center shrink-0 transition-transform duration-200 group-hover:scale-110 group-hover:rotate-3 shadow-md', tool.color)}>
               <Icon className="h-5 w-5 text-white" />
             </div>
             
@@ -307,7 +315,7 @@ export function ToolGrid() {
 
   return (
     <section className="min-h-[calc(100vh-4rem)]">
-      <div className="border-b border-border bg-bg-primary/95 backdrop-blur-xl sticky top-16 z-30">
+      <div className="border-y border-border bg-bg-primary/95 backdrop-blur-xl sticky top-16 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <div className="shrink-0 hidden md:block">
@@ -385,9 +393,9 @@ export function ToolGrid() {
               {/* Categorized View (when no filters are active) */}
               {activeCategory === 'All' && !query ? (
                 <div className="space-y-6">
-                  {recentToolsData.length > 0 && renderToolGroup("Jump Back In", recentToolsData, <History className="h-4.5 w-4.5 text-blue-500" />)}
+                  {recentToolsData.length > 0 && renderToolGroup("Jump Back In", recentToolsData.slice(0, 4), <History className="h-4.5 w-4.5 text-blue-500" />)}
                   {favoriteTools.length > 0 && renderToolGroup("Favorites", favoriteTools, <Star className="h-4.5 w-4.5 text-amber-500 fill-amber-500" />)}
-                  {renderToolGroup("Recently Added", tools.filter(t => t.isNew), <Sparkles className="h-4.5 w-4.5 text-fuchsia-500" />)}
+                  {renderToolGroup("Recently Added", tools.filter(t => t.isNew).slice(0, 8), <Sparkles className="h-4.5 w-4.5 text-fuchsia-500" />)}
                   
                   {/* Render by Category */}
                   {categories.filter(c => c !== 'All' && c !== 'New').map(cat => {

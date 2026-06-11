@@ -3,11 +3,18 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, FileJson, Lock, Hash, Clock, Regex, FileCode, Link2, CalendarClock, Type, Palette, KeyRound, Globe, AlignLeft, Binary, ImageUp, Earth, QrCode, Braces, Code, GitCompare, Ruler, CalendarPlus, SunMoon, Fingerprint, Shield, Laptop, Layers, Grid, Star, History, TerminalSquare, Database, GitBranch, Calculator, Bot, FileMinus } from 'lucide-react';
+import { Search, X, FileJson, Lock, Hash, Clock, Regex, FileCode, Link2, CalendarClock, Type, Palette, KeyRound, Globe, AlignLeft, Binary, ImageUp, Earth, QrCode, Braces, Code, GitCompare, Ruler, CalendarPlus, SunMoon, Fingerprint, Shield, Laptop, Layers, Grid, Star, History, TerminalSquare, Database, GitBranch, Calculator, Bot, FileMinus, Network, Cpu } from 'lucide-react';
 import { useAppStore } from '@/lib/store/useStore';
 import { Modal } from '@/components/ui/Modal';
 
 const tools = [
+  { id: 'chmod', name: 'Chmod Calculator', description: 'Convert and calculate Unix octal, symbolic, and text permissions', icon: Shield, category: 'Security' },
+  { id: 'subnet', name: 'IP Subnet Calculator', description: 'Calculate CIDR subnets, mask values, usable hosts and network boundaries', icon: Network, category: 'Network' },
+  { id: 'mask-converter', name: 'Subnet Mask Converter', description: 'Convert bidirectionally between CIDR, Subnet Masks, and Wildcard Masks', icon: Layers, category: 'Network' },
+  { id: 'ipv6', name: 'IPv6 Address Helper', description: 'Expand, compress, validate, and parse reverse DNS lookup keys', icon: Globe, category: 'Network' },
+  { id: 'mac-lookup', name: 'MAC Address Lookup', description: 'Vendor, transmission, and admin classification check', icon: Cpu, category: 'Network' },
+  { id: 'dns-decoder', name: 'DNS Record Decoder', description: 'Parse queries and response headers from binary DNS HEX streams', icon: Globe, category: 'Network' },
+  { id: 'dns-decoder', name: 'DNS Record Decoder', description: 'Parse queries and response headers from binary DNS HEX streams', icon: Globe, category: 'Formatting' },
   { id: 'json', name: 'JSON Beautifier', description: 'Format, minify, sort & validate JSON', icon: FileJson, category: 'Formatting' },
   { id: 'color', name: 'Color Converter', description: 'Convert hex, RGB & HSL colours', icon: Palette, category: 'Formatting' },
   { id: 'yaml-json', name: 'YAML ↔ JSON', description: 'Convert between YAML and JSON', icon: FileCode, category: 'Formatting' },

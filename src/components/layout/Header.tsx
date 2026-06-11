@@ -19,9 +19,13 @@ const tools = [
   { id: 'cron', name: 'Cron Parser', category: 'datetime' },
   { id: 'timezone', name: 'Time Zone Converter', category: 'datetime' },
   { id: 'qr-code', name: 'QR Code Generator', category: 'encoding' },
+  { id: 'subnet', name: 'IP Subnet Calculator', category: 'network' },
+  { id: 'ipv6', name: 'IPv6 Address Helper', category: 'network' },
+  { id: 'mac-lookup', name: 'MAC Address Lookup', category: 'network' },
 ];
 
 const categories = [
+  { id: 'network', name: 'Network', tools: ['subnet', 'ipv6', 'mac-lookup'] },
   { id: 'encoding', name: 'Encoding', tools: ['base64', 'url', 'qr-code'] },
   { id: 'security', name: 'Security', tools: ['jwt', 'hash'] },
   { id: 'formatting', name: 'Formatting', tools: ['json'] },

@@ -1,16 +1,19 @@
 'use client';
 
 import * as React from 'react';
-import { Sliders, RefreshCw, Layers, Grid, Code, Sparkles, HelpCircle, RotateCcw } from 'lucide-react';
+import { Sliders, RefreshCw, Layers, Grid, Code, Sparkles, RotateCcw, Plus, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { CopyButton } from '@/components/ui/CopyButton';
 import { Select } from '@/components/ui/Select';
-import { GradientBox } from '@/components/ui/GradientBox';
 import { ToolLayout } from '@/components/tool/ToolLayout';
-import { toast } from '@/components/ui/Toast';
 import { cn } from '@/lib/utils';
 
-// Flexbox directions mapping
+interface ItemConfig {
+  id: number;
+  colSpan: number;
+  rowSpan: number;
+}
+
 const flexDirections = [
   { value: 'row', label: 'row (Horizontal)' },
   { value: 'row-reverse', label: 'row-reverse' },
@@ -35,7 +38,6 @@ const alignOptions = [
   { value: 'baseline', label: 'baseline' },
 ];
 
-// Grid mappings
 const gridJustifyOptions = [
   { value: 'stretch', label: 'stretch' },
   { value: 'start', label: 'start' },
@@ -45,7 +47,7 @@ const gridJustifyOptions = [
 
 export default function Page() {
   const [layoutMode, setLayoutMode] = React.useState<'flex' | 'grid'>('flex');
-  const [itemCount, setItemCount] = React.useState<number>(4);
+  const [itemCount, setItemCount] = React.useState<number>(6);
 
   // --- Flexbox States ---
   const [flexDir, setFlexDir] = React.useState('row');
@@ -55,25 +57,72 @@ export default function Page() {
   const [flexGap, setFlexGap] = React.useState(16); // in px
 
   // --- Grid States ---
+  const [gridTemplateType, setGridTemplateType] = React.useState<'fixed' | 'auto-fill' | 'auto-fit'>('fixed');
   const [gridCols, setGridCols] = React.useState(3);
   const [gridRows, setGridRows] = React.useState(2);
+  const [minMaxColWidth, setMinMaxColWidth] = React.useState(120); // in px
   const [gridGap, setGridGap] = React.useState(16); // in px
   const [gridJustify, setGridJustify] = React.useState('stretch');
   const [gridAlign, setGridAlign] = React.useState('stretch');
 
+  // Track configurations for individual grid items (spans)
+  const [itemConfigs, setItemConfigs] = React.useState<ItemConfig[]>([
+    { id: 1, colSpan: 1, rowSpan: 1 },
+    { id: 2, colSpan: 1, rowSpan: 1 },
+    { id: 3, colSpan: 1, rowSpan: 1 },
+    { id: 4, colSpan: 1, rowSpan: 1 },
+    { id: 5, colSpan: 1, rowSpan: 1 },
+    { id: 6, colSpan: 1, rowSpan: 1 },
+    { id: 7, colSpan: 1, rowSpan: 1 },
+    { id: 8, colSpan: 1, rowSpan: 1 },
+    { id: 9, colSpan: 1, rowSpan: 1 },
+    { id: 10, colSpan: 1, rowSpan: 1 },
+    { id: 11, colSpan: 1, rowSpan: 1 },
+    { id: 12, colSpan: 1, rowSpan: 1 },
+  ]);
+  const [selectedItemId, setSelectedItemId] = React.useState<number | null>(null);
+
   const handleReset = () => {
-    setItemCount(4);
+    setItemCount(6);
     setFlexDir('row');
     setJustifyContent('center');
     setAlignItems('center');
     setFlexWrap(false);
     setFlexGap(16);
+    setGridTemplateType('fixed');
     setGridCols(3);
     setGridRows(2);
+    setMinMaxColWidth(120);
     setGridGap(16);
     setGridJustify('stretch');
     setGridAlign('stretch');
+    setItemConfigs(
+      Array.from({ length: 12 }, (_, i) => ({ id: i + 1, colSpan: 1, rowSpan: 1 }))
+    );
+    setSelectedItemId(null);
   };
+
+  const handleSpanChange = (itemId: number, type: 'col' | 'row', change: number) => {
+    setItemConfigs((prev) =>
+      prev.map((item) => {
+        if (item.id === itemId) {
+          const key = type === 'col' ? 'colSpan' : 'rowSpan';
+          const maxLimit = type === 'col' ? gridCols : gridRows;
+          const newVal = Math.max(1, Math.min(maxLimit, item[key] + change));
+          return { ...item, [key]: newVal };
+        }
+        return item;
+      })
+    );
+  };
+
+  // Compile CSS template track declarations
+  const gridTemplateColsStr = React.useMemo(() => {
+    if (gridTemplateType === 'fixed') {
+      return `repeat(${gridCols}, minmax(0, 1fr))`;
+    }
+    return `repeat(${gridTemplateType}, minmax(${minMaxColWidth}px, 1fr))`;
+  }, [gridTemplateType, gridCols, minMaxColWidth]);
 
   // Compile CSS output
   const cssCode = React.useMemo(() => {
@@ -87,16 +136,39 @@ export default function Page() {
   gap: ${flexGap}px;
 }`;
     } else {
+      let customItemRules = '';
+      itemConfigs.slice(0, itemCount).forEach((item, idx) => {
+        if (item.colSpan > 1 || item.rowSpan > 1) {
+          customItemRules += `\n\n.item-${idx + 1} {${
+            item.colSpan > 1 ? `\n  grid-column: span ${item.colSpan};` : ''
+          }${item.rowSpan > 1 ? `\n  grid-row: span ${item.rowSpan};` : ''}\n}`;
+        }
+      });
+
       return `.container {
   display: grid;
-  grid-template-columns: repeat(${gridCols}, minmax(0, 1fr));
+  grid-template-columns: ${gridTemplateColsStr};
   grid-template-rows: repeat(${gridRows}, minmax(0, 1fr));
   gap: ${gridGap}px;
   justify-items: ${gridJustify};
   align-items: ${gridAlign};
-}`;
+}${customItemRules}`;
     }
-  }, [layoutMode, flexDir, justifyContent, alignItems, flexWrap, flexGap, gridCols, gridRows, gridGap, gridJustify, gridAlign]);
+  }, [
+    layoutMode,
+    flexDir,
+    justifyContent,
+    alignItems,
+    flexWrap,
+    flexGap,
+    gridTemplateColsStr,
+    gridRows,
+    gridGap,
+    gridJustify,
+    gridAlign,
+    itemConfigs,
+    itemCount,
+  ]);
 
   // Compile Tailwind utility classes
   const tailwindClasses = React.useMemo(() => {
@@ -105,22 +177,46 @@ export default function Page() {
       const justClass = justifyContent === 'flex-start' ? 'justify-start' : justifyContent === 'flex-end' ? 'justify-end' : justifyContent === 'center' ? 'justify-center' : justifyContent === 'space-between' ? 'justify-between' : justifyContent === 'space-around' ? 'justify-around' : 'justify-evenly';
       const alignClass = alignItems === 'flex-start' ? 'items-start' : alignItems === 'flex-end' ? 'items-end' : alignItems === 'center' ? 'items-center' : alignItems === 'baseline' ? 'items-baseline' : 'items-stretch';
       const wrapClass = flexWrap ? 'flex-wrap' : 'flex-nowrap';
-      
       const gapVal = Math.round(flexGap / 4);
       const gapClass = `gap-${gapVal}`;
 
       return `flex ${dirClass} ${justClass} ${alignClass} ${wrapClass} ${gapClass}`;
     } else {
-      const colClass = `grid-cols-${gridCols}`;
+      const colClass = gridTemplateType === 'fixed' ? `grid-cols-${gridCols}` : `grid-cols-[repeat(${gridTemplateType},minmax(${minMaxColWidth}px,1fr))]`;
       const rowClass = `grid-rows-${gridRows}`;
       const gapVal = Math.round(gridGap / 4);
       const gapClass = `gap-${gapVal}`;
       const justClass = `justify-items-${gridJustify}`;
       const alignClass = `items-${gridAlign}`;
 
-      return `grid ${colClass} ${rowClass} ${gapClass} ${justClass} ${alignClass}`;
+      let customItemRules = '';
+      itemConfigs.slice(0, itemCount).forEach((item, idx) => {
+        if (item.colSpan > 1 || item.rowSpan > 1) {
+          const colSpanClass = item.colSpan > 1 ? ` col-span-${item.colSpan}` : '';
+          const rowSpanClass = item.rowSpan > 1 ? ` row-span-${item.rowSpan}` : '';
+          customItemRules += `\n<!-- Item ${idx + 1} utilities -->\nclass="${colSpanClass.trim()}${rowSpanClass}"`;
+        }
+      });
+
+      return `grid ${colClass} ${rowClass} ${gapClass} ${justClass} ${alignClass}${customItemRules}`;
     }
-  }, [layoutMode, flexDir, justifyContent, alignItems, flexWrap, flexGap, gridCols, gridRows, gridGap, gridJustify, gridAlign]);
+  }, [
+    layoutMode,
+    flexDir,
+    justifyContent,
+    alignItems,
+    flexWrap,
+    flexGap,
+    gridTemplateType,
+    gridCols,
+    gridRows,
+    minMaxColWidth,
+    gridGap,
+    gridJustify,
+    gridAlign,
+    itemConfigs,
+    itemCount,
+  ]);
 
   // Inline container styles for preview
   const containerStyle = React.useMemo(() => {
@@ -134,22 +230,34 @@ export default function Page() {
         gap: `${flexGap}px`,
         width: '100%',
         height: '100%',
-        minHeight: '220px',
+        minHeight: '280px',
       };
     } else {
       return {
         display: 'grid',
-        gridTemplateColumns: `repeat(${gridCols}, minmax(0, 1fr))`,
+        gridTemplateColumns: gridTemplateColsStr,
         gridTemplateRows: `repeat(${gridRows}, minmax(0, 1fr))`,
         gap: `${gridGap}px`,
         justifyItems: gridJustify,
         alignItems: gridAlign,
         width: '100%',
         height: '100%',
-        minHeight: '220px',
+        minHeight: '280px',
       };
     }
-  }, [layoutMode, flexDir, justifyContent, alignItems, flexWrap, flexGap, gridCols, gridRows, gridGap, gridJustify, gridAlign]);
+  }, [
+    layoutMode,
+    flexDir,
+    justifyContent,
+    alignItems,
+    flexWrap,
+    flexGap,
+    gridTemplateColsStr,
+    gridRows,
+    gridGap,
+    gridJustify,
+    gridAlign,
+  ]);
 
   return (
     <ToolLayout
@@ -162,7 +270,7 @@ export default function Page() {
         <button
           onClick={() => { setLayoutMode('flex'); }}
           className={cn(
-            'px-5 py-3 border-b-2 font-medium text-sm transition-all duration-200 flex items-center gap-1.5',
+            'px-5 py-3 border-b-2 font-medium text-sm transition-all duration-200 flex items-center gap-1.5 cursor-pointer',
             layoutMode === 'flex'
               ? 'border-accent text-accent font-semibold'
               : 'border-transparent text-text-muted hover:text-text-primary'
@@ -174,7 +282,7 @@ export default function Page() {
         <button
           onClick={() => { setLayoutMode('grid'); }}
           className={cn(
-            'px-5 py-3 border-b-2 font-medium text-sm transition-all duration-200 flex items-center gap-1.5',
+            'px-5 py-3 border-b-2 font-medium text-sm transition-all duration-200 flex items-center gap-1.5 cursor-pointer',
             layoutMode === 'grid'
               ? 'border-accent text-accent font-semibold'
               : 'border-transparent text-text-muted hover:text-text-primary'
@@ -204,7 +312,10 @@ export default function Page() {
                 min="1"
                 max="12"
                 value={itemCount}
-                onChange={(e) => setItemCount(parseInt(e.target.value, 10))}
+                onChange={(e) => {
+                  setItemCount(parseInt(e.target.value, 10));
+                  setSelectedItemId(null);
+                }}
                 className="w-full h-2 rounded-lg bg-bg-tertiary appearance-none cursor-pointer accent-accent border border-border"
               />
             </div>
@@ -263,18 +374,53 @@ export default function Page() {
             ) : (
               /* Grid parameters form */
               <div className="space-y-4 animate-fade-in">
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-text-muted mb-1.5 uppercase">Columns: {gridCols}</label>
-                    <input
-                      type="range"
-                      min="1"
-                      max="6"
-                      value={gridCols}
-                      onChange={(e) => setGridCols(parseInt(e.target.value, 10))}
-                      className="w-full h-2 rounded-lg bg-bg-tertiary appearance-none cursor-pointer accent-accent border border-border"
-                    />
+                <div className="space-y-2">
+                  <label className="block text-xs font-semibold text-text-muted uppercase">Grid Template Mode</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {['fixed', 'auto-fill', 'auto-fit'].map((t) => (
+                      <button
+                        key={t}
+                        onClick={() => setGridTemplateType(t as any)}
+                        className={cn(
+                          'px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-colors cursor-pointer',
+                          gridTemplateType === t
+                            ? 'bg-accent/10 border-accent text-accent'
+                            : 'bg-bg-tertiary border-border text-text-muted hover:text-text-primary'
+                        )}
+                      >
+                        {t}
+                      </button>
+                    ))}
                   </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {gridTemplateType === 'fixed' ? (
+                    <div>
+                      <label className="block text-xs font-semibold text-text-muted mb-1.5 uppercase">Columns: {gridCols}</label>
+                      <input
+                        type="range"
+                        min="1"
+                        max="6"
+                        value={gridCols}
+                        onChange={(e) => setGridCols(parseInt(e.target.value, 10))}
+                        className="w-full h-2 rounded-lg bg-bg-tertiary appearance-none cursor-pointer accent-accent border border-border"
+                      />
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block text-xs font-semibold text-text-muted mb-1.5 uppercase">Min Col Width: {minMaxColWidth}px</label>
+                      <input
+                        type="range"
+                        min="60"
+                        max="240"
+                        step="10"
+                        value={minMaxColWidth}
+                        onChange={(e) => setMinMaxColWidth(parseInt(e.target.value, 10))}
+                        className="w-full h-2 rounded-lg bg-bg-tertiary appearance-none cursor-pointer accent-accent border border-border"
+                      />
+                    </div>
+                  )}
 
                   <div>
                     <label className="block text-xs font-semibold text-text-muted mb-1.5 uppercase">Rows: {gridRows}</label>
@@ -315,6 +461,59 @@ export default function Page() {
                     className="w-full h-2 rounded-lg bg-bg-tertiary appearance-none cursor-pointer accent-accent border border-border"
                   />
                 </div>
+
+                {/* Individual Item Configuration Panels */}
+                <div className="pt-4 border-t border-border/60 space-y-2">
+                  <span className="block text-xs font-semibold text-text-muted uppercase">Grid Item Settings</span>
+                  <p className="text-xs text-text-muted leading-relaxed">
+                    Click an item in the sandbox preview canvas to configure its column-span or row-span.
+                  </p>
+
+                  {selectedItemId !== null && (
+                    <div className="p-3 bg-bg-tertiary border border-border rounded-lg flex items-center justify-between animate-fade-in">
+                      <span className="text-xs font-bold text-text-primary">Item {selectedItemId} Spans:</span>
+                      <div className="flex gap-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] uppercase text-text-muted font-mono">Cols:</span>
+                          <button
+                            onClick={() => handleSpanChange(selectedItemId, 'col', -1)}
+                            className="p-1 bg-bg-secondary border border-border rounded text-text-secondary hover:text-text-primary cursor-pointer"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </button>
+                          <span className="text-xs font-mono font-bold w-4 text-center">
+                            {itemConfigs.find((i) => i.id === selectedItemId)?.colSpan || 1}
+                          </span>
+                          <button
+                            onClick={() => handleSpanChange(selectedItemId, 'col', 1)}
+                            className="p-1 bg-bg-secondary border border-border rounded text-text-secondary hover:text-text-primary cursor-pointer"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] uppercase text-text-muted font-mono">Rows:</span>
+                          <button
+                            onClick={() => handleSpanChange(selectedItemId, 'row', -1)}
+                            className="p-1 bg-bg-secondary border border-border rounded text-text-secondary hover:text-text-primary cursor-pointer"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </button>
+                          <span className="text-xs font-mono font-bold w-4 text-center">
+                            {itemConfigs.find((i) => i.id === selectedItemId)?.rowSpan || 1}
+                          </span>
+                          <button
+                            onClick={() => handleSpanChange(selectedItemId, 'row', 1)}
+                            className="p-1 bg-bg-secondary border border-border rounded text-text-secondary hover:text-text-primary cursor-pointer"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -324,19 +523,43 @@ export default function Page() {
         <div className="space-y-6">
           <h2 className="text-base font-medium text-text-secondary">Interactive Sandbox Canvas</h2>
 
-          <div className="w-full p-6 rounded-2xl border border-border bg-bg-tertiary shadow-inner overflow-hidden min-h-[260px] flex items-center justify-center relative">
+          <div className="w-full p-6 rounded-2xl border border-border bg-bg-tertiary shadow-inner overflow-hidden min-h-[320px] flex items-center justify-center relative">
             {/* Grid visual dots background */}
             <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-10 dark:bg-[radial-gradient(#374151_1px,transparent_1px)]" />
 
             <div style={containerStyle} className="relative z-10 w-full h-full">
-              {Array.from({ length: itemCount }).map((_, i) => (
-                <div
-                  key={i}
-                  className="w-14 h-14 rounded-xl bg-gradient-to-br from-accent to-indigo-500 shadow-md flex items-center justify-center text-white font-mono font-bold text-xs select-none hover:scale-105 transition-transform"
-                >
-                  {i + 1}
-                </div>
-              ))}
+              {itemConfigs.slice(0, itemCount).map((item, i) => {
+                const isSelected = selectedItemId === item.id;
+                const inlineItemStyle = layoutMode === 'grid' ? {
+                  gridColumn: `span ${item.colSpan}`,
+                  gridRow: `span ${item.rowSpan}`
+                } : {};
+
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => {
+                      if (layoutMode === 'grid') {
+                        setSelectedItemId(item.id);
+                      }
+                    }}
+                    style={inlineItemStyle}
+                    className={cn(
+                      "rounded-xl bg-gradient-to-br from-accent to-indigo-500 shadow-md flex flex-col items-center justify-center text-white font-mono font-bold text-xs select-none transition-all cursor-pointer",
+                      layoutMode === 'grid' && "hover:border-white/50 hover:ring-2 hover:ring-accent/50",
+                      isSelected && "border-2 border-white ring-4 ring-accent scale-[1.02] shadow-xl",
+                      layoutMode === 'flex' ? 'w-14 h-14' : 'w-full h-full min-h-[60px]'
+                    )}
+                  >
+                    <span>{i + 1}</span>
+                    {layoutMode === 'grid' && (item.colSpan > 1 || item.rowSpan > 1) && (
+                      <span className="text-[9px] opacity-80 mt-1">
+                        {item.colSpan}x{item.rowSpan}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
